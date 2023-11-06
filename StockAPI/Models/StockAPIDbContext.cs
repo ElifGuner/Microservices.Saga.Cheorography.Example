@@ -1,14 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Data.Entity;
 
 namespace StockAPI.Models
 {
-    public class StockAPIDbContext : DbContext
+    public class StockAPIDbContext : Microsoft.EntityFrameworkCore.DbContext
     {
         public StockAPIDbContext(DbContextOptions options) : base(options)
         {
 
         }
-        public Dbset<Stock> Stocks { get; set; }
+        public Microsoft.EntityFrameworkCore.DbSet<Stock> Stocks { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -20,4 +21,5 @@ namespace StockAPI.Models
              new Stock() { Id = 5, ProductId = Guid.NewGuid(), Count = 500 }
             );
         }
+    }
 }

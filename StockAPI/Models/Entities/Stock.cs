@@ -2,7 +2,9 @@
 {
     public class Stock
     {
-        public Guid Id;
+        public int Id { get; set; }
+        public Guid ProductId { get; set; }
+        public int Count { get; set; }
 
     }
 }

@@ -1,5 +1,4 @@
 ﻿using MassTransit;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OrderAPI.Models;
 using OrderAPI.Models.Entities;
@@ -14,12 +13,12 @@ namespace OrderAPI.Controllers
     public class OrdersController : ControllerBase
     {
         readonly OrderAPIDbContext _context;
-        //readonly IPublishEndpoint _publishEndpoint;
-        //public OrdersController(OrderAPIDbContext context, IPublishEndpoint publishEndpoint)
-        //{
-        //    _context = context;
-        //    _publishEndpoint = publishEndpoint;
-        //}
+        readonly IPublishEndpoint _publishEndpoint;
+        public OrdersController(OrderAPIDbContext context, IPublishEndpoint publishEndpoint)
+        {
+            _context = context;
+            _publishEndpoint = publishEndpoint;
+        }
 
         public OrdersController(OrderAPIDbContext context)
         {
@@ -48,16 +47,18 @@ namespace OrderAPI.Controllers
             await  _context.Orders.AddAsync(order);
             await _context.SaveChangesAsync();
 
-            //OrderCreatedEvent orderCreatedEvent = new()
-            //{
-            //    BuyerId = order.BuyerId,
-            //    OrderId = order.OrderId,
-            //    OrderItems = order.OrderItems.Select(oi => new OrderItemMessage {
-            //        Count = oi.Count,
-            //        ProductId = oi.ProductId
-            //    }).ToList()
-            //};
-            //await _publishEndpoint.Publish(orderCreatedEvent);
+            OrderCreatedEvent orderCreatedEvent = new()
+            {
+                BuyerId = order.BuyerId,
+                OrderId = order.OrderId,
+                TotalPrice = order.TotalPrice,
+                OrderItems = order.OrderItems.Select(oi => new OrderItemMessage
+                {
+                    Count = oi.Count,
+                    ProductId = oi.ProductId
+                }).ToList()
+            };
+            await _publishEndpoint.Publish(orderCreatedEvent);
             return Ok();
         }
     }
